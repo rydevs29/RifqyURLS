@@ -3,61 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RifqyURL Pro | Expiry & Premium</title>
+    <title>RifqyURL Pro | Fixed Limit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        select option { background: #0f172a; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
     <div class="w-full max-w-md glass p-8 rounded-3xl shadow-2xl">
         <div class="text-center mb-6">
-            <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400 tracking-tight">RifqyURL PRO</h1>
-            <p class="text-slate-400 text-xs mt-2 uppercase tracking-widest">Custom ID • Expiry • Analytics</p>
+            <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">RifqyURL PRO</h1>
+            <p class="text-slate-400 text-xs mt-2 uppercase tracking-widest">Security Enabled • IP Limited</p>
         </div>
 
         <div class="space-y-4">
-            <div>
-                <label class="text-[10px] font-bold text-slate-500 ml-1">TARGET URL</label>
-                <input type="url" id="longUrl" placeholder="https://example.com" class="w-full px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 outline-none focus:border-blue-500 transition-all">
-            </div>
-
+            <input type="url" id="longUrl" placeholder="https://example.com" class="w-full px-4 py-3 rounded-xl bg-slate-900/50 border border-slate-700 outline-none focus:border-blue-500 transition-all">
+            
             <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-[10px] font-bold text-slate-500 ml-1">DURASI AKTIF</label>
-                    <select id="expiryTime" class="w-full px-3 py-3 rounded-xl bg-slate-900/50 border border-slate-700 outline-none text-sm cursor-pointer">
-                        <option value="3600000">1 Jam</option>
-                        <option value="21600000">6 Jam</option>
-                        <option value="604800000" selected>7 Hari</option>
-                        <option value="premium">Premium (Selamanya)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-[10px] font-bold text-slate-500 ml-1">CUSTOM ID (OPSIONAL)</label>
-                    <input type="text" id="customId" placeholder="alias" class="w-full px-3 py-3 rounded-xl bg-slate-900/50 border border-slate-700 outline-none text-sm">
-                </div>
+                <select id="expiryTime" class="w-full px-3 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm">
+                    <option value="3600000">1 Jam</option>
+                    <option value="21600000">6 Jam</option>
+                    <option value="604800000" selected>7 Hari</option>
+                    <option value="premium">Premium</option>
+                </select>
+                <input type="text" id="customId" placeholder="alias (opsional)" class="w-full px-3 py-3 rounded-xl bg-slate-900 border border-slate-700 text-sm">
             </div>
 
-            <button onclick="shorten()" id="btnShorten" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 font-bold py-4 rounded-2xl transition-all shadow-lg shadow-blue-500/20 active:scale-95">
+            <button onclick="shorten()" id="btnShorten" class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-4 rounded-2xl transition-all shadow-lg active:scale-95">
                 Generate Link
             </button>
         </div>
 
         <div id="resultArea" class="hidden mt-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
             <p id="shortLink" class="text-emerald-400 font-mono text-center text-sm break-all mb-3"></p>
-            <button onclick="copyLink()" class="w-full bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-400 text-xs py-2 rounded-lg font-bold border border-emerald-500/20">SALIN LINK</button>
+            <button onclick="copyLink()" class="w-full bg-emerald-600/20 text-emerald-400 text-xs py-2 rounded-lg font-bold border border-emerald-500/20">SALIN LINK</button>
         </div>
     </div>
 
-    <div id="adminPanel" class="hidden mt-6 w-full max-w-md bg-slate-900 border border-slate-700 p-5 rounded-2xl shadow-2xl">
-        <h2 class="text-xs font-bold text-blue-400 mb-4 uppercase tracking-tighter">Database Management</h2>
-        <div id="adminList" class="space-y-3 max-h-80 overflow-y-auto pr-2"></div>
-    </div>
+    <div onclick="unlockAdmin()" class="mt-10 text-slate-800 text-[10px] cursor-pointer">rifqy-v3.1-fix-limit</div>
 
-    <div onclick="unlockAdmin()" class="mt-10 text-slate-800 text-[10px] cursor-pointer">rifqy-v3.0-enterprise</div>
+    <div id="adminPanel" class="hidden mt-6 w-full max-w-md bg-slate-900 border border-slate-700 p-5 rounded-2xl shadow-2xl">
+        <h2 class="text-xs font-bold text-blue-400 mb-4 uppercase">Admin Panel</h2>
+        <div id="adminList" class="space-y-2 max-h-60 overflow-y-auto"></div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -77,102 +67,126 @@
         const db = getDatabase(app);
 
         async function getIP() {
-            const res = await fetch('https://api.ipify.org?format=json');
-            const data = await res.json();
-            return data.ip.replace(/\./g, "_");
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                return data.ip.replace(/\./g, "_");
+            } catch (e) { return "unknown_ip"; }
         }
 
         window.shorten = async function() {
-            const longUrl = document.getElementById('longUrl').value;
+            const longUrl = document.getElementById('longUrl').value.trim();
             const expiryVal = document.getElementById('expiryTime').value;
             const customId = document.getElementById('customId').value.trim();
             const btn = document.getElementById('btnShorten');
 
-            if (!longUrl.startsWith('http')) return alert("Gunakan https://");
-
-            let isPremium = false;
-            let expiryTime = Date.now() + parseInt(expiryVal);
-
-            // LOGIKA PREMIUM
-            if (expiryVal === "premium") {
-                const pass = prompt("Masukkan Password Premium:");
-                if (pass === "RifqyQPP28!@") {
-                    isPremium = true;
-                    expiryTime = 9999999999999; // Tahun 2286 (Selamanya)
-                } else {
-                    alert("Password Premium Salah!");
-                    return;
-                }
-            }
+            if (!longUrl) return alert("Isi URL-nya dulu bos!");
 
             btn.disabled = true;
+            btn.innerText = "Checking IP...";
+
             try {
                 const ip = await getIP();
+                const limitRef = ref(db, 'user_limits/' + ip);
+                const snapshot = await get(limitRef);
+                
+                const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+                const sekarang = Date.now();
+                let userData = snapshot.val() || { count: 0, startTime: sekarang };
+
+                // --- LOGIKA BLOKIR IP (DI SINI MASALAHNYA TADI) ---
+                if (sekarang - userData.startTime > SEVEN_DAYS) {
+                    userData = { count: 0, startTime: sekarang };
+                }
+
+                if (userData.count >= 5) {
+                    const sisa = Math.ceil((userData.startTime + SEVEN_DAYS - sekarang) / (1000 * 60 * 60 * 24));
+                    alert(`Waduh! IP kamu (${ip.replace(/_/g,'.')}) sudah limit 5 link. Balik lagi dalam ${sisa} hari ya!`);
+                    btn.disabled = false;
+                    btn.innerText = "Generate Link";
+                    return; // Berhenti di sini, tidak lanjut simpan ke database
+                }
+                // --------------------------------------------------
+
+                let isPremium = false;
+                let expiryTime = sekarang + parseInt(expiryVal);
+
+                if (expiryVal === "premium") {
+                    if (prompt("Password Premium:") === "RifqyQPP28!@") {
+                        isPremium = true;
+                        expiryTime = 9999999999999;
+                    } else {
+                        alert("Salah password!");
+                        btn.disabled = false;
+                        return;
+                    }
+                }
+
                 const shortId = customId || Math.random().toString(36).substring(2, 8);
                 
-                // Simpan Data Lengkap
+                // Simpan ke database
                 await set(ref(db, 'links/' + shortId), {
                     url: longUrl,
                     clicks: 0,
                     expiry: expiryTime,
                     isPremium: isPremium,
-                    ownerIp: ip
+                    ip: ip
                 });
 
-                const final = window.location.origin + window.location.pathname + "?id=" + shortId;
-                document.getElementById('shortLink').innerText = final;
+                // Update hitungan IP
+                userData.count += 1;
+                await set(limitRef, userData);
+
+                document.getElementById('shortLink').innerText = window.location.origin + window.location.pathname + "?id=" + shortId;
                 document.getElementById('resultArea').classList.remove('hidden');
-            } catch (e) { alert("ID sudah dipakai atau Error: " + e.message); }
-            finally { btn.disabled = false; }
+            } catch (e) { alert("Error / ID sudah ada: " + e.message); }
+            finally { 
+                btn.disabled = false;
+                btn.innerText = "Generate Link";
+            }
         };
 
-        // REDIRECT & COUNTER & AUTO-DELETE
+        // Redirect & Auto Delete
         const id = new URLSearchParams(window.location.search).get('id');
         if (id) {
             get(ref(db, 'links/' + id)).then(async (s) => {
                 if (s.exists()) {
                     const data = s.val();
                     if (Date.now() > data.expiry) {
-                        await remove(ref(db, 'links/' + id)); // Hapus dari Firebase karena kadaluarsa
-                        alert("Link ini sudah kadaluarsa dan dihapus!");
+                        await remove(ref(db, 'links/' + id));
+                        alert("Link Expired!");
                         window.location.href = window.location.origin;
                     } else {
                         await update(ref(db, 'links/' + id), { clicks: increment(1) });
                         window.location.href = data.url;
                     }
-                } else { alert("Link tidak ditemukan!"); }
+                }
             });
         }
 
-        // ADMIN PANEL
-        let clicks = 0;
+        // Admin Panel
+        let c = 0;
         window.unlockAdmin = () => {
-            if (++clicks >= 5) {
-                if (prompt("Admin Password:") === "RifqyQPP28!@") renderAdmin();
-                clicks = 0;
+            if (++c >= 5) {
+                if (prompt("Pass:") === "RifqyQPP28!@") renderAdmin();
+                c = 0;
             }
         };
 
         async function renderAdmin() {
             document.getElementById('adminPanel').classList.remove('hidden');
             const snap = await get(ref(db, 'links'));
-            let html = "";
-            snap.forEach(child => {
-                const d = child.val();
-                const remains = d.isPremium ? "♾️" : Math.round((d.expiry - Date.now()) / 3600000) + "h";
-                html += `<div class="p-3 bg-slate-800 rounded-xl mb-2 text-[10px] flex justify-between items-center border border-slate-700">
-                    <div>
-                        <b class="text-blue-400">${child.key}</b> <span class="text-slate-500">(${d.clicks} klik)</span><br>
-                        <span class="text-slate-400">Exp: ${remains}</span>
-                    </div>
-                    <button onclick="del('${child.key}')" class="text-red-500 font-bold">HAPUS</button>
+            let h = "";
+            snap.forEach(i => {
+                h += `<div class="p-2 bg-slate-800 rounded mb-1 text-[10px] flex justify-between">
+                    <span><b>${i.key}</b> (${i.val().clicks} klik)</span>
+                    <button onclick="del('${i.key}')" class="text-red-500">Hapus</button>
                 </div>`;
             });
-            document.getElementById('adminList').innerHTML = html;
+            document.getElementById('adminList').innerHTML = h;
         }
-
-        window.del = async (key) => { if(confirm("Hapus?")) { await remove(ref(db, 'links/'+key)); renderAdmin(); } };
-        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('shortLink').innerText); alert("Copy Berhasil!"); };
+        window.del = async (k) => { if(confirm("Hapus?")) { await remove(ref(db, 'links/'+k)); renderAdmin(); } };
+        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('shortLink').innerText); alert("Copied!"); };
     </script>
 </body>
 </html>
