@@ -3,26 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RifqyURL | Shortener</title>
+    <title>RifqyURL | Premium Shortener</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; }
+        body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
+        .admin-scroll::-webkit-scrollbar { width: 5px; }
+        .admin-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="w-full max-w-md glass border border-slate-700 p-8 rounded-2xl shadow-2xl">
+    <div class="w-full max-w-md glass border border-slate-700 p-8 rounded-2xl shadow-2xl transition-all">
         <div class="text-center mb-8">
             <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
                 RifqyURL
             </h1>
-            <p class="text-slate-400 mt-2">Tempel link panjang, buat jadi pendek!</p>
+            <p class="text-slate-400 mt-2 text-sm">Aman • Cepat • Limit IP 5/Minggu</p>
         </div>
 
         <div class="space-y-4">
-            <input type="url" id="longUrl" placeholder="https://contoh-link-panjang.com/..." 
-                class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+            <input type="url" id="longUrl" placeholder="https://tempel-link-disini.com" 
+                class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-600">
             
             <button onclick="shorten()" id="btnShorten" 
                 class="w-full bg-blue-600 hover:bg-blue-500 font-bold py-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-blue-500/20">
@@ -30,25 +32,37 @@
             </button>
         </div>
 
-        <div id="resultArea" class="hidden mt-8 p-4 bg-slate-800/50 border border-dashed border-slate-600 rounded-xl animate-pulse">
-            <p class="text-xs text-slate-400 text-center mb-2 uppercase tracking-widest font-bold">Berhasil! Ini Link Kamu:</p>
+        <div id="resultArea" class="hidden mt-8 p-4 bg-slate-800/50 border border-dashed border-slate-600 rounded-xl">
+            <p class="text-[10px] text-slate-500 text-center mb-2 uppercase tracking-widest font-bold">Link Berhasil Dibuat</p>
             <div class="flex items-center gap-2">
-                <p id="shortLink" class="flex-1 text-cyan-400 font-mono text-sm truncate"></p>
-                <button onclick="copyLink()" class="bg-slate-700 hover:bg-slate-600 text-xs px-3 py-1 rounded-lg">Salin</button>
+                <p id="shortLink" class="flex-1 text-cyan-400 font-mono text-sm truncate bg-slate-900 p-2 rounded"></p>
+                <button onclick="copyLink()" class="bg-blue-600 hover:bg-blue-500 text-xs px-3 py-2 rounded-lg font-bold">Salin</button>
             </div>
         </div>
     </div>
 
+    <div id="adminPanel" class="hidden mt-6 w-full max-w-md bg-slate-900 border border-slate-700 p-4 rounded-xl shadow-2xl">
+        <div class="flex justify-between items-center mb-3 border-b border-slate-700 pb-2">
+            <h2 class="text-xs font-bold text-yellow-500 uppercase">Admin Panel</h2>
+            <button onclick="document.getElementById('adminPanel').classList.add('hidden')" class="text-slate-500 text-xs">Tutup</button>
+        </div>
+        <div id="adminList" class="space-y-2 max-h-60 overflow-y-auto admin-scroll pr-2">
+            </div>
+    </div>
+
+    <div onclick="unlockAdmin()" class="mt-12 text-slate-800 cursor-default select-none text-[10px] hover:text-slate-700 transition-colors">
+        rifqy-v2.5-secure-ip
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Konfigurasi Firebase Milik Rifqy
         const firebaseConfig = {
             apiKey: "AIzaSyChF12-MFH4BMTE9p2HGypUhvFYSDlilbc",
             authDomain: "rifqyurl.firebaseapp.com",
             projectId: "rifqyurl",
-            databaseURL: "https://rifqyurl-default-rtdb.asia-southeast1.firebasedatabase.app/", // Pastikan URL database ini benar
+            databaseURL: "https://rifqyurl-default-rtdb.asia-southeast1.firebasedatabase.app",
             storageBucket: "rifqyurl.firebasestorage.app",
             messagingSenderId: "772691101649",
             appId: "1:772691101649:web:a856d7e9bea45ba04502f0",
@@ -58,69 +72,129 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- 1. LOGIKA REDIRECT (Saat Link Dibuka) ---
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get('id');
-
-        if (id) {
-            document.body.innerHTML = `
-                <div class="text-center">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                    <h1 class="text-xl font-bold italic text-blue-400">RifqyURL sedang mengarahkan...</h1>
-                </div>`;
-            
-            const linkRef = ref(db, 'links/' + id);
-            get(linkRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    window.location.href = snapshot.val();
-                } else {
-                    alert("Waduh, link ini tidak ada di database Rifqy!");
-                    window.location.href = window.location.origin + window.location.pathname;
-                }
-            }).catch(e => console.error("Error redirecting:", e));
+        // --- 1. AMBIL IP USER ---
+        async function getIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                return data.ip.replace(/\./g, "_");
+            } catch (e) { return "anonymous"; }
         }
 
-        // --- 2. LOGIKA SHORTEN (Saat Klik Tombol) ---
+        // --- 2. LOGIKA SHORTEN ---
         window.shorten = async function() {
             const input = document.getElementById('longUrl');
             const btn = document.getElementById('btnShorten');
-            const longUrl = input.value;
+            const longUrl = input.value.trim();
 
-            if (!longUrl.startsWith('http')) {
-                alert("Harap masukkan URL lengkap (pakai http:// atau https://)");
-                return;
-            }
+            if (!longUrl.startsWith('http')) return alert("Masukkan URL lengkap (pakai https://)");
 
             btn.disabled = true;
-            btn.innerText = "Sabar ya...";
-
-            // Generate Kode Acak 6 digit
-            const shortId = Math.random().toString(36).substring(2, 8);
+            btn.innerText = "Memproses...";
 
             try {
-                // Simpan ke Firebase Database
+                const ip = await getIP();
+                const limitRef = ref(db, 'user_limits/' + ip);
+                const snapshot = await get(limitRef);
+                
+                const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+                const sekarang = Date.now();
+                let userData = snapshot.val() || { count: 0, startTime: sekarang };
+
+                // Reset jika sudah lewat 7 hari
+                if (sekarang - userData.startTime > SEVEN_DAYS) {
+                    userData = { count: 0, startTime: sekarang };
+                }
+
+                // Cek Limit
+                if (userData.count >= 5) {
+                    const sisa = Math.ceil((userData.startTime + SEVEN_DAYS - sekarang) / (1000 * 60 * 60 * 24));
+                    alert(`Limit tercapai! Kamu bisa membuat link lagi dalam ${sisa} hari.`);
+                    return;
+                }
+
+                // Simpan ke Firebase
+                const shortId = Math.random().toString(36).substring(2, 8);
                 await set(ref(db, 'links/' + shortId), longUrl);
 
-                // Buat link pendek
-                const finalUrl = window.location.origin + window.location.pathname + "?id=" + shortId;
-                
-                document.getElementById('shortLink').innerText = finalUrl;
-                document.getElementById('resultArea').classList.remove('hidden', 'animate-pulse');
+                // Update Limit IP
+                userData.count += 1;
+                await set(limitRef, userData);
+
+                // Tampilkan Hasil
+                const final = window.location.origin + window.location.pathname + "?id=" + shortId;
+                document.getElementById('shortLink').innerText = final;
+                document.getElementById('resultArea').classList.remove('hidden');
                 input.value = "";
-            } catch (e) {
-                alert("Gagal simpan: " + e.message);
-            } finally {
+
+            } catch (e) { alert("Error: " + e.message); }
+            finally { 
                 btn.disabled = false;
                 btn.innerText = "Pendekkan Sekarang!";
             }
         };
 
-        // --- 3. FUNGSI COPY ---
-        window.copyLink = function() {
-            const link = document.getElementById('shortLink').innerText;
-            navigator.clipboard.writeText(link);
-            alert("Link disalin ke clipboard!");
+        // --- 3. LOGIKA REDIRECT ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        if (id) {
+            document.body.innerHTML = "<div class='min-h-screen flex items-center justify-center text-blue-400 font-bold animate-pulse text-xl'>Mengarahkan ke tujuan...</div>";
+            get(ref(db, 'links/' + id)).then(s => {
+                if (s.exists()) window.location.href = s.val();
+                else alert("Link tidak ditemukan!");
+            });
         }
+
+        // --- 4. ADMIN PANEL & PASSWORD ---
+        let clickCount = 0;
+        window.unlockAdmin = async () => {
+            clickCount++;
+            if (clickCount >= 5) {
+                const pass = prompt("Masukkan Password Admin:");
+                if (pass === "RifqyQPP28!@") {
+                    renderAdminList();
+                    document.getElementById('adminPanel').classList.remove('hidden');
+                } else {
+                    alert("Akses Ditolak.");
+                }
+                clickCount = 0;
+            }
+        };
+
+        async function renderAdminList() {
+            const list = document.getElementById('adminList');
+            list.innerHTML = "<p class='text-[10px] text-slate-500'>Memuat data...</p>";
+            const snap = await get(ref(db, 'links'));
+            if (snap.exists()) {
+                let html = "";
+                const data = snap.val();
+                for (let k in data) {
+                    html += `
+                    <div class="flex justify-between items-center p-2 bg-slate-800 mb-1 rounded border border-slate-700">
+                        <div class="truncate mr-4 flex flex-col">
+                            <span class="text-blue-400 font-bold text-[10px] uppercase">${k}</span>
+                            <span class="text-slate-400 text-[9px] truncate w-48">${data[k]}</span>
+                        </div>
+                        <button onclick="deleteLink('${k}')" class="text-[9px] bg-red-900/30 text-red-400 px-2 py-1 rounded hover:bg-red-600 hover:text-white transition-all font-bold">HAPUS</button>
+                    </div>`;
+                }
+                list.innerHTML = html;
+            } else { list.innerHTML = "<p class='text-slate-500 text-[10px]'>Tidak ada link.</p>"; }
+        }
+
+        window.deleteLink = async (targetId) => {
+            if (confirm("Hapus link " + targetId + "?")) {
+                await set(ref(db, 'links/' + targetId), null);
+                renderAdminList();
+            }
+        };
+
+        window.copyLink = () => {
+            const text = document.getElementById('shortLink').innerText;
+            navigator.clipboard.writeText(text);
+            alert("Berhasil disalin!");
+        };
     </script>
 </body>
-</html>
+                    </html>
+                    
