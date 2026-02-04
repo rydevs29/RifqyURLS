@@ -3,149 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RifqyURL | Ultimate</title>
+    <title>RifqyURL | Enterprise</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { 
             background-color: #020617; 
             color: #f8fafc; 
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 70%);
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
             min-height: 100vh;
+            overflow-x: hidden;
         }
         .glass-card {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(16px);
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         .input-field {
             background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(71, 85, 105, 0.5);
+            border: 1px solid rgba(71, 85, 105, 0.4);
             transition: all 0.3s ease;
         }
         .input-field:focus {
-            background: rgba(30, 41, 59, 0.8);
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+            background: rgba(30, 41, 59, 0.9);
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
         }
-        /* Custom Checkbox */
-        .checkbox-wrapper input:checked + div { background-color: #3b82f6; border-color: #3b82f6; }
-        .checkbox-wrapper input:checked + div svg { display: block; }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center p-4 selection:bg-blue-500 selection:text-white">
+<body class="flex flex-col items-center justify-center p-4 min-h-screen relative">
 
-    <div id="creatorCard" class="w-full max-w-lg glass-card p-8 rounded-3xl relative overflow-hidden transition-all duration-500">
-        <div class="text-center mb-6">
-            <h1 class="text-4xl font-extrabold tracking-tight text-white mb-1">
-                Rifqy<span class="text-blue-500">URL</span>
-            </h1>
-            <p class="text-slate-400 text-[10px] uppercase tracking-widest font-bold">Secure • Fast • QR Support</p>
+    <div class="fixed top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="fixed bottom-20 right-10 w-72 h-72 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+    <div id="creatorApp" class="w-full max-w-xl glass-card p-8 rounded-3xl relative z-10 fade-in" style="animation-delay: 0.1s;">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-white tracking-tight mb-2">Rifqy<span class="text-blue-500">URL</span></h1>
+            <div class="flex justify-center gap-2">
+                <span class="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-bold border border-blue-500/20">ENTERPRISE</span>
+                <span class="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 text-[10px] font-bold border border-purple-500/20">SECURE</span>
+            </div>
         </div>
 
-        <div class="space-y-4">
+        <div class="space-y-5">
             <div class="group">
-                <label class="block text-[10px] font-bold text-slate-500 mb-1 ml-1">URL TUJUAN</label>
-                <input type="url" id="longUrl" placeholder="https://..." class="input-field w-full px-4 py-3 rounded-xl outline-none text-sm text-white placeholder-slate-600">
+                <label class="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">URL Tujuan (Pisahkan koma untuk Rotator)</label>
+                <div class="relative">
+                    <i class="fa-solid fa-link absolute left-4 top-4 text-slate-500"></i>
+                    <input type="text" id="longUrl" placeholder="https://site1.com, https://site2.com" class="input-field w-full pl-10 pr-4 py-3.5 rounded-xl outline-none text-sm text-white placeholder-slate-600">
+                </div>
+                <p class="text-[10px] text-slate-500 mt-1 ml-1">*Contoh Rotator: https://google.com, https://youtube.com</p>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-500 mb-1 ml-1">DURASI</label>
-                    <select id="expiryTime" class="input-field w-full px-3 py-3 rounded-xl outline-none text-xs text-slate-300 cursor-pointer">
-                        <option value="3600000">1 Jam</option>
-                        <option value="21600000">6 Jam</option>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Custom Alias</label>
+                    <input type="text" id="customId" placeholder="nama-keren" class="input-field w-full px-4 py-3 rounded-xl outline-none text-sm text-white placeholder-slate-600">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Durasi Link</label>
+                    <select id="expiryTime" class="input-field w-full px-4 py-3 rounded-xl outline-none text-sm text-slate-300 cursor-pointer">
                         <option value="86400000">24 Jam</option>
                         <option value="604800000" selected>7 Hari</option>
-                        <option value="premium">✨ Premium</option>
+                        <option value="2592000000">30 Hari</option>
+                        <option value="premium">✨ Permanen (Premium)</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 mb-1 ml-1">ALIAS (ANTI-TABRAK)</label>
-                    <input type="text" id="customId" placeholder="nama-unik" class="input-field w-full px-3 py-3 rounded-xl outline-none text-xs text-white placeholder-slate-600">
-                </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 pt-2">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 mb-1 ml-1">PASSWORD LINK (OPSIONAL)</label>
-                    <input type="text" id="linkPassword" placeholder="Kunci rahasia..." class="input-field w-full px-3 py-3 rounded-xl outline-none text-xs text-white placeholder-slate-600">
-                </div>
-                <div class="flex items-end pb-3">
-                    <label class="checkbox-wrapper flex items-center cursor-pointer select-none">
-                        <input type="checkbox" id="isOneTime" class="hidden">
-                        <div class="w-5 h-5 border-2 border-slate-600 rounded flex items-center justify-center mr-2 transition-all">
-                            <svg class="w-3 h-3 text-white hidden pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            <div class="border-t border-slate-700/50 pt-4">
+                <button onclick="document.getElementById('advOptions').classList.toggle('hidden')" class="text-xs text-blue-400 font-bold hover:text-blue-300 flex items-center gap-1">
+                    <i class="fa-solid fa-gear"></i> Pengaturan Canggih
+                </button>
+                
+                <div id="advOptions" class="hidden mt-4 space-y-4 bg-slate-900/40 p-4 rounded-xl border border-slate-700/30">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Password Link</label>
+                            <input type="text" id="linkPassword" placeholder="(Opsional)" class="input-field w-full px-3 py-2 rounded-lg text-xs">
                         </div>
-                        <span class="text-xs text-slate-400 font-bold">Sekali Pakai (Auto-Delete)</span>
-                    </label>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Max Klik (Limit)</label>
+                            <input type="number" id="maxClicks" placeholder="0 = Unlimited" class="input-field w-full px-3 py-2 rounded-lg text-xs">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Blokir Negara (Kode ISO)</label>
+                        <input type="text" id="geoBlock" value="KP" placeholder="Contoh: KP, IL (Pisahkan koma)" class="input-field w-full px-3 py-2 rounded-lg text-xs uppercase">
+                        <p class="text-[10px] text-slate-600 mt-1">Default: KP (Korea Utara).</p>
+                    </div>
                 </div>
             </div>
 
-            <button onclick="shorten()" id="btnShorten" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all transform mt-2 flex justify-center items-center gap-2">
-                <span>Buat Link</span> ⚡
+            <button onclick="shorten()" id="btnShorten" class="btn-primary w-full text-white font-bold py-4 rounded-xl transition-all active:scale-[0.98] flex justify-center items-center gap-2">
+                Buat Link Sekarang <i class="fa-solid fa-bolt"></i>
             </button>
         </div>
 
-        <div id="resultArea" class="hidden mt-6 pt-6 border-t border-slate-700/50 animate-pulse-once">
+        <div id="resultArea" class="hidden mt-6 pt-6 border-t border-slate-700/50 fade-in">
             <div class="flex flex-col items-center gap-4">
-                <div class="p-2 bg-white rounded-xl">
-                    <img id="qrImage" src="" alt="QR Code" class="w-24 h-24 object-contain">
+                <div class="bg-white p-2 rounded-xl shadow-lg">
+                    <img id="qrImage" src="" alt="QR" class="w-24 h-24 object-contain">
                 </div>
-                
-                <div class="w-full flex items-center gap-2 bg-slate-900/50 p-2 rounded-xl border border-slate-700/50">
-                    <div class="flex-1 px-3 overflow-hidden">
-                        <p id="shortLink" class="text-blue-400 font-mono text-sm truncate"></p>
-                    </div>
-                    <button onclick="copyLink()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 py-2.5 rounded-lg font-bold transition-colors">Salin</button>
+                <div class="w-full flex gap-2 bg-slate-900/80 p-3 rounded-xl border border-slate-700">
+                    <p id="shortLink" class="flex-1 text-blue-400 font-mono text-sm truncate flex items-center"></p>
+                    <button onclick="copyLink()" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-4 rounded-lg font-bold transition-colors">Salin</button>
                 </div>
-                <p class="text-[10px] text-slate-500">Link ini sudah diamankan oleh sistem.</p>
             </div>
         </div>
     </div>
 
-    <div id="previewCard" class="hidden w-full max-w-md glass-card p-8 rounded-3xl text-center">
-        <div id="iconStatus" class="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">🛡️</div>
+    <div id="previewApp" class="hidden w-full max-w-md glass-card p-8 rounded-3xl text-center fade-in">
+        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/20">
+            <i class="fa-solid fa-shield-halved text-2xl text-white"></i>
+        </div>
         
-        <h2 id="previewTitle" class="text-2xl font-bold text-white mb-2">Keamanan Link</h2>
-        <p id="previewDesc" class="text-slate-400 text-sm mb-6">Kamu akan diarahkan ke situs eksternal.</p>
+        <h2 id="prevTitle" class="text-2xl font-bold text-white mb-2">Pemeriksaan Keamanan</h2>
+        <p id="prevDesc" class="text-slate-400 text-sm mb-6">Link ini dilindungi oleh sistem RifqyURL.</p>
 
-        <div id="passwordArea" class="hidden mb-4">
-            <input type="password" id="inputPassLink" placeholder="Masukkan Password Link..." class="input-field w-full px-4 py-3 rounded-xl text-center outline-none text-white mb-2">
-            <p class="text-[10px] text-red-400 hidden" id="wrongPassMsg">Password salah!</p>
+        <div id="dynamicContent" class="mb-6">
+            <div id="passArea" class="hidden">
+                <input type="password" id="inputPass" placeholder="Masukkan Password Link" class="input-field w-full px-4 py-3 rounded-xl text-center text-white mb-2">
+                <p id="passError" class="text-xs text-red-500 hidden font-bold">Password Salah!</p>
+            </div>
+
+            <button onclick="reportLink()" id="btnReport" class="text-[10px] text-slate-500 hover:text-red-400 flex items-center justify-center gap-1 w-full mt-2 transition-colors">
+                <i class="fa-solid fa-flag"></i> Laporkan Link Ini
+            </button>
         </div>
 
-        <div id="urlDisplay" class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50 mb-6 text-left">
-            <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Tujuan:</p>
-            <p id="targetUrlDisplay" class="text-blue-400 font-mono text-sm break-all blur-sm transition-all">https://protected-link...</p>
-        </div>
-
-        <button id="btnContinue" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all">
-            Lanjut ke Tautan &rarr;
+        <button id="btnContinue" class="btn-primary w-full text-white font-bold py-3.5 rounded-xl transition-all shadow-lg">
+            Lanjut ke Tujuan <i class="fa-solid fa-arrow-right ml-1"></i>
         </button>
     </div>
 
-    <div id="adminPanel" class="hidden mt-8 w-full max-w-3xl glass-card p-6 rounded-2xl">
-        <div class="flex justify-between items-center mb-6 border-b border-slate-700/50 pb-4">
-            <h2 class="text-lg font-bold text-white">Admin Dashboard</h2>
-            <button onclick="document.getElementById('adminPanel').classList.add('hidden')" class="text-xs bg-slate-800 px-3 py-1.5 rounded">Tutup</button>
-        </div>
-        <div class="grid grid-cols-12 gap-2 text-[10px] font-bold text-slate-500 uppercase mb-2 px-2">
-            <div class="col-span-2">ID</div>
-            <div class="col-span-1">Klik</div>
-            <div class="col-span-2">Info</div>
-            <div class="col-span-5">Tujuan</div>
-            <div class="col-span-2 text-right">Aksi</div>
-        </div>
-        <div id="adminList" class="space-y-1 max-h-80 overflow-y-auto"></div>
+    <div id="errorApp" class="hidden text-center fade-in">
+        <div class="text-6xl mb-4">🛸</div>
+        <h1 class="text-3xl font-extrabold text-white mb-2">404 - Link Hilang</h1>
+        <p class="text-slate-400 text-sm mb-8 max-w-xs mx-auto">Link yang kamu cari mungkin sudah kadaluarsa, dihapus, atau diculik alien.</p>
+        <a href="/" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold transition-all border border-slate-600">
+            Buat Link Baru
+        </a>
     </div>
 
-    <div onclick="unlockAdmin()" class="mt-12 text-slate-800 text-[10px] cursor-pointer hover:text-slate-700 select-none">v5.0-ultimate</div>
+    <div id="adminPanel" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-4xl glass-card rounded-2xl h-[80vh] flex flex-col">
+            <div class="p-6 border-b border-slate-700/50 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Admin Dashboard</h2>
+                    <p class="text-xs text-slate-400">Monitoring & Analytics Real-time</p>
+                </div>
+                <button onclick="document.getElementById('adminPanel').classList.add('hidden')" class="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition">Close</button>
+            </div>
+            
+            <div class="flex-1 overflow-auto p-6">
+                <div class="grid grid-cols-12 gap-2 text-[10px] font-bold text-slate-500 uppercase mb-3 px-2">
+                    <div class="col-span-2">Alias</div>
+                    <div class="col-span-1 text-center">Klik</div>
+                    <div class="col-span-2 text-center">Device (M/D)</div>
+                    <div class="col-span-5">Target URL</div>
+                    <div class="col-span-2 text-right">Status</div>
+                </div>
+                <div id="adminList" class="space-y-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <div onclick="unlockAdmin()" class="mt-8 text-slate-800 text-[10px] cursor-pointer hover:text-slate-600 select-none">v6.0-enterprise</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -164,6 +209,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // --- HELPER FUNCTIONS ---
         async function getIP() {
             try {
                 const res = await fetch('https://api.ipify.org?format=json');
@@ -172,197 +218,277 @@
             } catch (e) { return "unknown_ip"; }
         }
 
-        // --- SHORTEN LOGIC (UPDATED) ---
+        async function getGeo(ip) {
+            try {
+                // Menggunakan layanan gratis untuk cek negara user
+                const res = await fetch('https://ipapi.co/json/'); 
+                const data = await res.json();
+                return data.country_code; // Mengembalikan kode negara (ID, US, KP, dll)
+            } catch (e) { return "XX"; }
+        }
+
+        function isBot() {
+            const botPattern = "(googlebot\/|bot|crawler|spider|robot|crawling)";
+            const re = new RegExp(botPattern, "i");
+            return re.test(navigator.userAgent);
+        }
+
+        function getDeviceType() {
+            const ua = navigator.userAgent;
+            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) return "tablet";
+            if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) return "mobile";
+            return "desktop";
+        }
+
+        // --- 1. CORE SHORTENER LOGIC ---
         window.shorten = async function() {
-            const longUrl = document.getElementById('longUrl').value.trim();
-            const expiryVal = document.getElementById('expiryTime').value;
+            const longUrlInput = document.getElementById('longUrl').value.trim();
             const customId = document.getElementById('customId').value.trim().replace(/[^a-zA-Z0-9-_]/g, '');
+            const expiryVal = document.getElementById('expiryTime').value;
             const linkPass = document.getElementById('linkPassword').value.trim();
-            const isOneTime = document.getElementById('isOneTime').checked;
+            const maxClicksInput = document.getElementById('maxClicks').value;
+            const geoBlockInput = document.getElementById('geoBlock').value.toUpperCase();
+            
             const btn = document.getElementById('btnShorten');
 
-            if (!longUrl.startsWith('http')) return alert("Gunakan https:// pada URL!");
+            if (!longUrlInput) return alert("Masukkan minimal satu URL!");
+            
+            // Logic Rotator: Split URL berdasarkan koma
+            const urls = longUrlInput.split(',').map(u => u.trim()).filter(u => u.startsWith('http'));
+            if (urls.length === 0) return alert("URL harus diawali https://");
 
-            // 1. Loading Animation
             btn.disabled = true;
-            btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Memproses...`;
 
             try {
-                // 2. IP Limit Check
+                // IP Limit Check
                 const ip = await getIP();
                 const limitRef = ref(db, 'user_limits/' + ip);
                 const snapshot = await get(limitRef);
                 const SEVEN_DAYS = 604800000;
-                const now = Date.now();
-                let userData = snapshot.val() || { count: 0, startTime: now };
+                let userData = snapshot.val() || { count: 0, startTime: Date.now() };
 
-                if (now - userData.startTime > SEVEN_DAYS) userData = { count: 0, startTime: now };
+                if (Date.now() - userData.startTime > SEVEN_DAYS) userData = { count: 0, startTime: Date.now() };
                 if (userData.count >= 5) {
-                    alert("Limit IP tercapai (5 link/minggu)!");
-                    resetBtn(); return;
+                    throw new Error("Limit 5 Link/Minggu tercapai!");
                 }
 
-                // 3. Setup Premium & Expiry
+                // Premium Check
                 let isPremium = false;
-                let expiryTime = now + parseInt(expiryVal);
+                let expiryTime = Date.now() + parseInt(expiryVal);
                 if (expiryVal === "premium") {
-                    if (prompt("Password Premium Owner:") === "RifqyQPP28!@") {
-                        isPremium = true; expiryTime = 32503680000000;
-                    } else { alert("Salah Password!"); resetBtn(); return; }
+                    if (prompt("Password Owner:") !== "RifqyQPP28!@") throw new Error("Akses Ditolak");
+                    isPremium = true; 
+                    expiryTime = 32503680000000;
                 }
 
+                // Anti-Collision
                 const shortId = customId || Math.random().toString(36).substring(2, 8);
+                const check = await get(ref(db, 'links/' + shortId));
+                if (check.exists()) throw new Error("Alias sudah dipakai!");
 
-                // 4. ANTI-TABRAK CHECK (NEW!)
-                const checkSnap = await get(ref(db, 'links/' + shortId));
-                if (checkSnap.exists()) {
-                    alert(`Maaf, Alias '${shortId}' sudah dipakai. Ganti yang lain!`);
-                    resetBtn(); return;
-                }
+                // Blokir Negara Array
+                const blockedList = geoBlockInput.split(',').map(c => c.trim()).filter(c => c.length === 2);
 
-                // 5. Simpan Data
+                // Save to DB
                 await set(ref(db, 'links/' + shortId), {
-                    url: longUrl,
-                    clicks: 0,
+                    urls: urls, // Array URL untuk rotator
+                    rotatorIndex: 0,
+                    createdAt: Date.now(),
                     expiry: expiryTime,
                     isPremium: isPremium,
                     ip: ip,
-                    linkPassword: linkPass || null, // Fitur Password Link
-                    oneTime: isOneTime // Fitur Sekali Pakai
+                    password: linkPass || null,
+                    maxClicks: parseInt(maxClicksInput) || 0,
+                    blockedCountries: blockedList.length > 0 ? blockedList : ['KP'],
+                    clicks: 0,
+                    stats: { mobile: 0, desktop: 0 },
+                    isReported: false
                 });
 
-                // 6. Update Limit
-                userData.count += 1;
+                // Update Limit
+                userData.count++;
                 await set(limitRef, userData);
 
-                // 7. Tampilkan Hasil & QR Code
-                const finalUrl = window.location.origin + window.location.pathname + "?id=" + shortId;
-                document.getElementById('shortLink').innerText = finalUrl;
-                // Generate QR Code
-                document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(finalUrl)}`;
-                
+                // UI Result
+                const resultLink = window.location.origin + window.location.pathname + "?id=" + shortId;
+                document.getElementById('shortLink').innerText = resultLink;
+                document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(resultLink)}`;
                 document.getElementById('resultArea').classList.remove('hidden');
+                
+                // Clear Inputs
                 document.getElementById('longUrl').value = "";
                 document.getElementById('customId').value = "";
 
-            } catch (e) { alert("Error: " + e.message); }
-            finally { resetBtn(); }
+            } catch (e) {
+                alert(e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `Buat Link Sekarang <i class="fa-solid fa-bolt"></i>`;
+            }
         };
 
-        function resetBtn() {
-            const btn = document.getElementById('btnShorten');
-            btn.disabled = false;
-            btn.innerHTML = `<span>Buat Link</span> ⚡`;
+        // --- 2. ACCESS & REDIRECT SYSTEM ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        if (id) {
+            document.getElementById('creatorApp').style.display = 'none';
+            document.body.insertAdjacentHTML('beforeend', `<div id="loader" class="text-blue-400 font-bold animate-pulse text-xl"><i class="fa-solid fa-satellite-dish fa-spin"></i> Menghubungkan...</div>`);
+
+            initRedirect();
         }
 
-        // --- PREVIEW & LOGIC BUKA LINK (UPDATED) ---
-        const id = new URLSearchParams(window.location.search).get('id');
-        if (id) {
-            document.getElementById('creatorCard').classList.add('hidden');
-            document.body.insertAdjacentHTML('beforeend', `<div id="load" class="text-blue-400 font-bold animate-pulse">Memuat...</div>`);
+        async function initRedirect() {
+            // Anti-Bot Check
+            if (isBot()) {
+                document.getElementById('loader').remove();
+                return showError("Akses Bot Terdeteksi. Ditolak.");
+            }
 
-            get(ref(db, 'links/' + id)).then(async (s) => {
-                document.getElementById('load')?.remove();
-                if (!s.exists()) return document.body.innerHTML = "<h1 class='text-white text-2xl'>Link Tidak Ditemukan 🤷‍♂️</h1>";
+            const snap = await get(ref(db, 'links/' + id));
+            document.getElementById('loader')?.remove();
 
-                const data = s.val();
+            if (!snap.exists()) return showError404();
 
-                // Cek Expired
-                if (Date.now() > data.expiry) {
-                    await remove(ref(db, 'links/' + id));
-                    return document.body.innerHTML = "<h1 class='text-white text-2xl'>Link Kadaluarsa 🗑️</h1>";
-                }
+            const data = snap.val();
 
-                // Setup Tampilan Preview
-                const card = document.getElementById('previewCard');
-                card.classList.remove('hidden');
-                const btnNext = document.getElementById('btnContinue');
-                const urlDisp = document.getElementById('targetUrlDisplay');
+            // 1. Cek Reported
+            if (data.isReported) return showError("Link ini telah dilaporkan berbahaya.");
 
-                // LOGIKA PASSWORD LINK
-                let isLocked = false;
-                if (data.linkPassword) {
-                    isLocked = true;
-                    document.getElementById('iconStatus').innerText = "🔒";
-                    document.getElementById('previewTitle').innerText = "Link Terkunci";
-                    document.getElementById('previewDesc').innerText = "Masukkan password untuk membuka link ini.";
-                    document.getElementById('passwordArea').classList.remove('hidden');
-                    btnNext.innerText = "Buka Kunci 🔓";
-                    urlDisp.innerText = "https://hidden-content..."; // Sembunyikan URL asli
-                } else {
-                    urlDisp.innerText = data.url;
-                    urlDisp.classList.remove('blur-sm');
-                }
+            // 2. Cek Expired (Time)
+            if (Date.now() > data.expiry) {
+                await remove(ref(db, 'links/' + id));
+                return showError404();
+            }
 
-                // KLIK TOMBOL LANJUT / UNLOCK
-                btnNext.onclick = async () => {
-                    if (isLocked) {
-                        // Cek Password
-                        const inputPass = document.getElementById('inputPassLink').value;
-                        if (inputPass === data.linkPassword) {
-                            isLocked = false;
-                            document.getElementById('passwordArea').classList.add('hidden');
-                            document.getElementById('wrongPassMsg').classList.add('hidden');
-                            document.getElementById('previewTitle').innerText = "Akses Diterima";
-                            document.getElementById('iconStatus').innerText = "✅";
-                            urlDisp.innerText = data.url;
-                            urlDisp.classList.remove('blur-sm');
-                            btnNext.innerText = "Lanjut ke Tautan &rarr;";
-                        } else {
-                            document.getElementById('wrongPassMsg').classList.remove('hidden');
-                            return;
-                        }
+            // 3. Cek Max Clicks
+            if (data.maxClicks > 0 && data.clicks >= data.maxClicks) {
+                return showError("Link ini sudah mencapai batas klik.");
+            }
+
+            // 4. Geofencing (Blokir Negara)
+            const userCountry = await getGeo();
+            if (data.blockedCountries && data.blockedCountries.includes(userCountry)) {
+                return showError(`Akses dari negara Anda (${userCountry}) diblokir.`);
+            }
+
+            // --- SHOW PREVIEW ---
+            const prevApp = document.getElementById('previewApp');
+            prevApp.classList.remove('hidden');
+            const btnContinue = document.getElementById('btnContinue');
+
+            // Handle Password
+            if (data.password) {
+                document.getElementById('prevTitle').innerText = "Link Terkunci";
+                document.getElementById('passArea').classList.remove('hidden');
+                btnContinue.innerText = "Buka Kunci 🔓";
+                
+                btnContinue.onclick = () => {
+                    const input = document.getElementById('inputPass').value;
+                    if (input === data.password) {
+                        processRedirect(data);
                     } else {
-                        // Proses Redirect
-                        await update(ref(db, 'links/' + id), { clicks: increment(1) });
-                        
-                        // LOGIKA SEKALI PAKAI (SELF-DESTRUCT)
-                        if (data.oneTime) {
-                            await remove(ref(db, 'links/' + id)); // Hapus data sebelum pindah
-                        }
-
-                        window.location.href = data.url;
+                        document.getElementById('passError').classList.remove('hidden');
                     }
                 };
-            });
+            } else {
+                btnContinue.onclick = () => processRedirect(data);
+            }
         }
 
-        // --- ADMIN PANEL ---
-        let c = 0;
+        async function processRedirect(data) {
+            const btn = document.getElementById('btnContinue');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Mengalihkan...`;
+
+            // Update Analytics
+            const device = getDeviceType();
+            const updates = {};
+            updates['clicks'] = increment(1);
+            updates[`stats/${device}`] = increment(1);
+            
+            // Logic Rotator (Pilih URL berikutnya)
+            let targetUrl = "";
+            if (Array.isArray(data.urls) && data.urls.length > 1) {
+                const nextIndex = (data.rotatorIndex + 1) % data.urls.length;
+                targetUrl = data.urls[data.rotatorIndex];
+                updates['rotatorIndex'] = nextIndex;
+            } else {
+                targetUrl = Array.isArray(data.urls) ? data.urls[0] : data.urls; // Handle legacy data
+            }
+
+            await update(ref(db, 'links/' + id), updates);
+            window.location.href = targetUrl;
+        }
+
+        window.reportLink = async () => {
+            if(confirm("Yakin ingin melaporkan link ini sebagai berbahaya?")) {
+                await update(ref(db, 'links/' + id), { isReported: true });
+                alert("Terima kasih. Link telah dilaporkan dan dinonaktifkan sementara.");
+                location.reload();
+            }
+        };
+
+        function showError404() {
+            document.getElementById('errorApp').classList.remove('hidden');
+        }
+
+        function showError(msg) {
+            document.body.innerHTML = `<div class="text-center p-8"><h1 class="text-red-500 text-3xl font-bold mb-4">⛔ Akses Ditolak</h1><p class="text-white">${msg}</p><a href="/" class="mt-8 block text-blue-400">Kembali</a></div>`;
+        }
+
+        // --- 3. ADMIN PANEL ---
+        let taps = 0;
         window.unlockAdmin = () => {
-            if (++c >= 5) {
-                if (prompt("Pass:") === "RifqyQPP28!@") renderAdmin();
-                c = 0;
+            if (++taps >= 5) {
+                if (prompt("Admin Key:") === "RifqyQPP28!@") renderAdmin();
+                taps = 0;
             }
         };
 
         async function renderAdmin() {
             document.getElementById('adminPanel').classList.remove('hidden');
-            const snap = await get(ref(db, 'links'));
-            let h = "";
-            snap.forEach(i => {
-                const d = i.val();
-                // Info Badges
-                let badges = "";
-                if (d.isPremium) badges += "👑 ";
-                if (d.linkPassword) badges += "🔒 ";
-                if (d.oneTime) badges += "💣 ";
-                if (!badges) badges = "-";
+            const list = document.getElementById('adminList');
+            list.innerHTML = `<p class="text-center text-slate-500">Memuat...</p>`;
 
-                h += `<div class="grid grid-cols-12 gap-2 p-2 bg-slate-800 rounded border border-slate-700 text-[10px] items-center mb-1">
-                    <div class="col-span-2 font-bold text-blue-400 truncate">${i.key}</div>
-                    <div class="col-span-1 text-center bg-slate-900 rounded">${d.clicks}</div>
-                    <div class="col-span-2 text-center">${badges}</div>
-                    <div class="col-span-5 truncate text-slate-400">${d.url}</div>
-                    <div class="col-span-2 text-right">
-                        <button onclick="del('${i.key}')" class="text-red-500 font-bold hover:underline">HAPUS</button>
+            const snap = await get(ref(db, 'links'));
+            let html = "";
+            
+            snap.forEach(child => {
+                const d = child.val();
+                const key = child.key;
+                
+                // Badges
+                let status = "";
+                if (d.isReported) status += "<span class='text-red-500 font-bold'>REPORTED</span> ";
+                if (d.maxClicks > 0 && d.clicks >= d.maxClicks) status += "<span class='text-orange-500'>LIMIT</span>";
+                else status += "<span class='text-green-500'>ACTIVE</span>";
+
+                // URL Display (Rotator count)
+                const urlDisplay = Array.isArray(d.urls) ? (d.urls.length > 1 ? `[Rotator ${d.urls.length} Links]` : d.urls[0]) : d.url;
+
+                // Stats Safe Check
+                const m = d.stats?.mobile || 0;
+                const dt = d.stats?.desktop || 0;
+
+                html += `
+                <div class="grid grid-cols-12 gap-2 p-3 bg-slate-800/50 rounded-xl border border-slate-700 items-center text-[10px] hover:bg-slate-800 transition">
+                    <div class="col-span-2 font-mono font-bold text-blue-400 truncate">${key}</div>
+                    <div class="col-span-1 text-center font-bold text-white bg-slate-700 rounded py-1">${d.clicks}</div>
+                    <div class="col-span-2 text-center text-slate-400">📱${m} | 💻${dt}</div>
+                    <div class="col-span-5 truncate text-slate-300">${urlDisplay}</div>
+                    <div class="col-span-2 text-right flex justify-end gap-2 items-center">
+                        ${status}
+                        <button onclick="del('${key}')" class="text-red-500 hover:bg-red-500/10 p-1 rounded"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>`;
             });
-            document.getElementById('adminList').innerHTML = h || "<p class='text-center text-slate-500'>Kosong</p>";
+            list.innerHTML = html || `<p class="text-center text-slate-500 py-4">Belum ada data.</p>`;
         }
-        window.del = async (k) => { if(confirm("Hapus?")) { await remove(ref(db, 'links/'+k)); renderAdmin(); } };
-        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('shortLink').innerText); alert("Tersalin!"); };
+
+        window.del = async (k) => { if(confirm("Hapus permanen?")) { await remove(ref(db, 'links/'+k)); renderAdmin(); } };
+        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('shortLink').innerText); alert("Link tersalin!"); };
     </script>
 </body>
 </html>
