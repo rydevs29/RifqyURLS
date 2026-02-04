@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RifqyURL | Enterprise</title>
+    <title>RifqyURL | Enterprise v7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -43,7 +43,14 @@
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
         }
-        /* Custom Scrollbar */
+        /* Custom Checkbox UI */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #68D391;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #68D391;
+        }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
@@ -61,7 +68,7 @@
         <div class="text-center mb-8">
             <h1 class="text-4xl font-extrabold text-white tracking-tight mb-2">Rifqy<span class="text-blue-500">URL</span></h1>
             <div class="flex justify-center gap-2">
-                <span class="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-bold border border-blue-500/20">ENTERPRISE</span>
+                <span class="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-[10px] font-bold border border-blue-500/20">ENTERPRISE v7</span>
                 <span class="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 text-[10px] font-bold border border-purple-500/20">SECURE</span>
             </div>
         </div>
@@ -108,10 +115,27 @@
                             <input type="number" id="maxClicks" placeholder="0 = Unlimited" class="input-field w-full px-3 py-2 rounded-lg text-xs">
                         </div>
                     </div>
+
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Blokir Negara (Kode ISO)</label>
-                        <input type="text" id="geoBlock" value="KP" placeholder="Contoh: KP, IL (Pisahkan koma)" class="input-field w-full px-3 py-2 rounded-lg text-xs uppercase">
-                        <p class="text-[10px] text-slate-600 mt-1">Default: KP (Korea Utara).</p>
+                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase"><i class="fa-regular fa-clock"></i> Jam Operasional (WIB/Lokal)</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="time" id="timeStart" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white">
+                            <input type="time" id="timeEnd" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white">
+                        </div>
+                        <p class="text-[9px] text-slate-500 mt-1">*Link hanya bisa dibuka di antara jam ini. Kosongkan jika 24 jam.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase"><i class="fa-solid fa-earth-asia"></i> Filter Negara (Kode ISO)</label>
+                        <input type="text" id="geoBlock" placeholder="Contoh: ID, MY, US (Pisahkan koma)" class="input-field w-full px-3 py-2 rounded-lg text-xs uppercase mb-2">
+                        
+                        <div class="flex items-center gap-2 bg-slate-800/50 p-2 rounded-lg border border-slate-700/50">
+                            <input type="checkbox" id="isWhitelist" class="w-4 h-4 rounded border-slate-600 text-blue-500 focus:ring-blue-500">
+                            <label for="isWhitelist" class="text-[10px] font-bold text-slate-300 cursor-pointer select-none">
+                                Mode Whitelist (Hanya Izinkan Negara di atas)
+                            </label>
+                        </div>
+                        <p class="text-[9px] text-slate-500 mt-1 ml-1">Default: Kosong = Semua negara diizinkan.</p>
                     </div>
                 </div>
             </div>
@@ -147,7 +171,6 @@
                 <input type="password" id="inputPass" placeholder="Masukkan Password Link" class="input-field w-full px-4 py-3 rounded-xl text-center text-white mb-2">
                 <p id="passError" class="text-xs text-red-500 hidden font-bold">Password Salah!</p>
             </div>
-
             <button onclick="reportLink()" id="btnReport" class="text-[10px] text-slate-500 hover:text-red-400 flex items-center justify-center gap-1 w-full mt-2 transition-colors">
                 <i class="fa-solid fa-flag"></i> Laporkan Link Ini
             </button>
@@ -159,9 +182,9 @@
     </div>
 
     <div id="errorApp" class="hidden text-center fade-in">
-        <div class="text-6xl mb-4">🛸</div>
-        <h1 class="text-3xl font-extrabold text-white mb-2">404 - Link Hilang</h1>
-        <p class="text-slate-400 text-sm mb-8 max-w-xs mx-auto">Link yang kamu cari mungkin sudah kadaluarsa, dihapus, atau diculik alien.</p>
+        <div class="text-6xl mb-4">⛔</div>
+        <h1 id="errorTitle" class="text-3xl font-extrabold text-white mb-2">Akses Ditolak</h1>
+        <p id="errorDesc" class="text-slate-400 text-sm mb-8 max-w-xs mx-auto">Link tidak dapat diakses saat ini.</p>
         <a href="/" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold transition-all border border-slate-600">
             Buat Link Baru
         </a>
@@ -176,12 +199,11 @@
                 </div>
                 <button onclick="document.getElementById('adminPanel').classList.add('hidden')" class="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded-lg text-xs font-bold transition">Close</button>
             </div>
-            
             <div class="flex-1 overflow-auto p-6">
                 <div class="grid grid-cols-12 gap-2 text-[10px] font-bold text-slate-500 uppercase mb-3 px-2">
                     <div class="col-span-2">Alias</div>
                     <div class="col-span-1 text-center">Klik</div>
-                    <div class="col-span-2 text-center">Device (M/D)</div>
+                    <div class="col-span-2 text-center">Info</div>
                     <div class="col-span-5">Target URL</div>
                     <div class="col-span-2 text-right">Status</div>
                 </div>
@@ -190,7 +212,7 @@
         </div>
     </div>
 
-    <div onclick="unlockAdmin()" class="mt-8 text-slate-800 text-[10px] cursor-pointer hover:text-slate-600 select-none">v6.0-enterprise</div>
+    <div onclick="unlockAdmin()" class="mt-8 text-slate-800 text-[10px] cursor-pointer hover:text-slate-600 select-none">v7.0-ultimate</div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -211,34 +233,15 @@
 
         // --- HELPER FUNCTIONS ---
         async function getIP() {
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                return data.ip.replace(/\./g, "_");
-            } catch (e) { return "unknown_ip"; }
+            try { const res = await fetch('https://api.ipify.org?format=json'); const data = await res.json(); return data.ip.replace(/\./g, "_"); } 
+            catch (e) { return "unknown_ip"; }
         }
-
-        async function getGeo(ip) {
-            try {
-                // Menggunakan layanan gratis untuk cek negara user
-                const res = await fetch('https://ipapi.co/json/'); 
-                const data = await res.json();
-                return data.country_code; // Mengembalikan kode negara (ID, US, KP, dll)
-            } catch (e) { return "XX"; }
+        async function getGeo() {
+            try { const res = await fetch('https://ipapi.co/json/'); const data = await res.json(); return data.country_code; } 
+            catch (e) { return "XX"; }
         }
-
-        function isBot() {
-            const botPattern = "(googlebot\/|bot|crawler|spider|robot|crawling)";
-            const re = new RegExp(botPattern, "i");
-            return re.test(navigator.userAgent);
-        }
-
-        function getDeviceType() {
-            const ua = navigator.userAgent;
-            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) return "tablet";
-            if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) return "mobile";
-            return "desktop";
-        }
+        function isBot() { return /googlebot|bot|crawler|spider|robot|crawling/i.test(navigator.userAgent); }
+        function getDeviceType() { return /mobile|android|iphone/i.test(navigator.userAgent) ? "mobile" : "desktop"; }
 
         // --- 1. CORE SHORTENER LOGIC ---
         window.shorten = async function() {
@@ -247,13 +250,16 @@
             const expiryVal = document.getElementById('expiryTime').value;
             const linkPass = document.getElementById('linkPassword').value.trim();
             const maxClicksInput = document.getElementById('maxClicks').value;
+            
+            // New Features Inputs
             const geoBlockInput = document.getElementById('geoBlock').value.toUpperCase();
+            const isWhitelist = document.getElementById('isWhitelist').checked;
+            const timeStart = document.getElementById('timeStart').value;
+            const timeEnd = document.getElementById('timeEnd').value;
             
             const btn = document.getElementById('btnShorten');
 
-            if (!longUrlInput) return alert("Masukkan minimal satu URL!");
-            
-            // Logic Rotator: Split URL berdasarkan koma
+            if (!longUrlInput) return alert("Masukkan URL!");
             const urls = longUrlInput.split(',').map(u => u.trim()).filter(u => u.startsWith('http'));
             if (urls.length === 0) return alert("URL harus diawali https://");
 
@@ -261,7 +267,7 @@
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Memproses...`;
 
             try {
-                // IP Limit Check
+                // IP Limit
                 const ip = await getIP();
                 const limitRef = ref(db, 'user_limits/' + ip);
                 const snapshot = await get(limitRef);
@@ -269,17 +275,14 @@
                 let userData = snapshot.val() || { count: 0, startTime: Date.now() };
 
                 if (Date.now() - userData.startTime > SEVEN_DAYS) userData = { count: 0, startTime: Date.now() };
-                if (userData.count >= 5) {
-                    throw new Error("Limit 5 Link/Minggu tercapai!");
-                }
+                if (userData.count >= 5) throw new Error("Limit 5 Link/Minggu tercapai!");
 
-                // Premium Check
+                // Premium
                 let isPremium = false;
                 let expiryTime = Date.now() + parseInt(expiryVal);
                 if (expiryVal === "premium") {
                     if (prompt("Password Owner:") !== "RifqyQPP28!@") throw new Error("Akses Ditolak");
-                    isPremium = true; 
-                    expiryTime = 32503680000000;
+                    isPremium = true; expiryTime = 32503680000000;
                 }
 
                 // Anti-Collision
@@ -287,12 +290,12 @@
                 const check = await get(ref(db, 'links/' + shortId));
                 if (check.exists()) throw new Error("Alias sudah dipakai!");
 
-                // Blokir Negara Array
-                const blockedList = geoBlockInput.split(',').map(c => c.trim()).filter(c => c.length === 2);
+                // Geo List Processing
+                const countryList = geoBlockInput.split(',').map(c => c.trim()).filter(c => c.length === 2);
 
-                // Save to DB
+                // Save
                 await set(ref(db, 'links/' + shortId), {
-                    urls: urls, // Array URL untuk rotator
+                    urls: urls,
                     rotatorIndex: 0,
                     createdAt: Date.now(),
                     expiry: expiryTime,
@@ -300,97 +303,101 @@
                     ip: ip,
                     password: linkPass || null,
                     maxClicks: parseInt(maxClicksInput) || 0,
-                    blockedCountries: blockedList.length > 0 ? blockedList : ['KP'],
+                    
+                    // NEW FEATURES DATA
+                    countries: countryList,     // List negara
+                    whitelistMode: isWhitelist, // True = Whitelist, False = Blacklist
+                    schedule: { start: timeStart, end: timeEnd }, // Jam Operasional
+                    
                     clicks: 0,
                     stats: { mobile: 0, desktop: 0 },
                     isReported: false
                 });
 
-                // Update Limit
                 userData.count++;
                 await set(limitRef, userData);
 
-                // UI Result
                 const resultLink = window.location.origin + window.location.pathname + "?id=" + shortId;
                 document.getElementById('shortLink').innerText = resultLink;
                 document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(resultLink)}`;
                 document.getElementById('resultArea').classList.remove('hidden');
-                
-                // Clear Inputs
-                document.getElementById('longUrl').value = "";
-                document.getElementById('customId').value = "";
+                document.getElementById('longUrl').value = ""; document.getElementById('customId').value = "";
 
-            } catch (e) {
-                alert(e.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = `Buat Link Sekarang <i class="fa-solid fa-bolt"></i>`;
-            }
+            } catch (e) { alert(e.message); } 
+            finally { btn.disabled = false; btn.innerHTML = `Buat Link Sekarang <i class="fa-solid fa-bolt"></i>`; }
         };
 
-        // --- 2. ACCESS & REDIRECT SYSTEM ---
+        // --- 2. ACCESS LOGIC (UPDATED) ---
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id');
 
         if (id) {
             document.getElementById('creatorApp').style.display = 'none';
-            document.body.insertAdjacentHTML('beforeend', `<div id="loader" class="text-blue-400 font-bold animate-pulse text-xl"><i class="fa-solid fa-satellite-dish fa-spin"></i> Menghubungkan...</div>`);
-
+            document.body.insertAdjacentHTML('beforeend', `<div id="loader" class="text-blue-400 font-bold animate-pulse text-xl"><i class="fa-solid fa-satellite-dish fa-spin"></i> Checking...</div>`);
             initRedirect();
         }
 
         async function initRedirect() {
-            // Anti-Bot Check
-            if (isBot()) {
-                document.getElementById('loader').remove();
-                return showError("Akses Bot Terdeteksi. Ditolak.");
-            }
+            if (isBot()) { document.getElementById('loader').remove(); return showError("Bot Detected", "Akses ditolak untuk bot."); }
 
             const snap = await get(ref(db, 'links/' + id));
             document.getElementById('loader')?.remove();
 
-            if (!snap.exists()) return showError404();
-
+            if (!snap.exists()) return showError("404", "Link tidak ditemukan.");
             const data = snap.val();
 
-            // 1. Cek Reported
-            if (data.isReported) return showError("Link ini telah dilaporkan berbahaya.");
+            // 1. Basic Checks
+            if (data.isReported) return showError("Bahaya", "Link ini telah dilaporkan.");
+            if (Date.now() > data.expiry) { await remove(ref(db, 'links/' + id)); return showError("Kadaluarsa", "Link sudah expired."); }
+            if (data.maxClicks > 0 && data.clicks >= data.maxClicks) return showError("Limit Tercapai", "Link mencapai batas klik.");
 
-            // 2. Cek Expired (Time)
-            if (Date.now() > data.expiry) {
-                await remove(ref(db, 'links/' + id));
-                return showError404();
+            // 2. SCHEDULE CHECK (NEW)
+            if (data.schedule && data.schedule.start && data.schedule.end) {
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentMin = now.getMinutes();
+                const currentTime = currentHour * 60 + currentMin; // Convert to minutes
+
+                const [sh, sm] = data.schedule.start.split(':').map(Number);
+                const [eh, em] = data.schedule.end.split(':').map(Number);
+                const startTime = sh * 60 + sm;
+                const endTime = eh * 60 + em;
+
+                // Simple range check
+                if (currentTime < startTime || currentTime > endTime) {
+                    return showError("Tutup", `Link hanya aktif pukul ${data.schedule.start} - ${data.schedule.end}`);
+                }
             }
 
-            // 3. Cek Max Clicks
-            if (data.maxClicks > 0 && data.clicks >= data.maxClicks) {
-                return showError("Link ini sudah mencapai batas klik.");
+            // 3. GEO CHECK (WHITELIST/BLACKLIST) (NEW)
+            if (data.countries && data.countries.length > 0) {
+                const userCountry = await getGeo();
+                
+                if (data.whitelistMode) {
+                    // WHITELIST MODE: Jika negara user TIDAK ada di list -> Blokir
+                    if (!data.countries.includes(userCountry)) {
+                        return showError("Akses Dibatasi", `Maaf, link ini khusus untuk negara: ${data.countries.join(', ')}`);
+                    }
+                } else {
+                    // BLACKLIST MODE: Jika negara user ADA di list -> Blokir
+                    if (data.countries.includes(userCountry)) {
+                        return showError("Akses Ditolak", `Negara Anda (${userCountry}) diblokir oleh pembuat link.`);
+                    }
+                }
             }
 
-            // 4. Geofencing (Blokir Negara)
-            const userCountry = await getGeo();
-            if (data.blockedCountries && data.blockedCountries.includes(userCountry)) {
-                return showError(`Akses dari negara Anda (${userCountry}) diblokir.`);
-            }
-
-            // --- SHOW PREVIEW ---
+            // --- Show Preview ---
             const prevApp = document.getElementById('previewApp');
             prevApp.classList.remove('hidden');
             const btnContinue = document.getElementById('btnContinue');
 
-            // Handle Password
             if (data.password) {
                 document.getElementById('prevTitle').innerText = "Link Terkunci";
                 document.getElementById('passArea').classList.remove('hidden');
                 btnContinue.innerText = "Buka Kunci 🔓";
-                
                 btnContinue.onclick = () => {
-                    const input = document.getElementById('inputPass').value;
-                    if (input === data.password) {
-                        processRedirect(data);
-                    } else {
-                        document.getElementById('passError').classList.remove('hidden');
-                    }
+                    if (document.getElementById('inputPass').value === data.password) processRedirect(data);
+                    else document.getElementById('passError').classList.remove('hidden');
                 };
             } else {
                 btnContinue.onclick = () => processRedirect(data);
@@ -402,20 +409,17 @@
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Mengalihkan...`;
 
-            // Update Analytics
-            const device = getDeviceType();
             const updates = {};
             updates['clicks'] = increment(1);
-            updates[`stats/${device}`] = increment(1);
+            updates[`stats/${getDeviceType()}`] = increment(1);
             
-            // Logic Rotator (Pilih URL berikutnya)
             let targetUrl = "";
             if (Array.isArray(data.urls) && data.urls.length > 1) {
                 const nextIndex = (data.rotatorIndex + 1) % data.urls.length;
                 targetUrl = data.urls[data.rotatorIndex];
                 updates['rotatorIndex'] = nextIndex;
             } else {
-                targetUrl = Array.isArray(data.urls) ? data.urls[0] : data.urls; // Handle legacy data
+                targetUrl = Array.isArray(data.urls) ? data.urls[0] : data.urls;
             }
 
             await update(ref(db, 'links/' + id), updates);
@@ -423,72 +427,48 @@
         }
 
         window.reportLink = async () => {
-            if(confirm("Yakin ingin melaporkan link ini sebagai berbahaya?")) {
+            if(confirm("Laporkan link ini?")) {
                 await update(ref(db, 'links/' + id), { isReported: true });
-                alert("Terima kasih. Link telah dilaporkan dan dinonaktifkan sementara.");
                 location.reload();
             }
         };
 
-        function showError404() {
+        function showError(title, msg) {
             document.getElementById('errorApp').classList.remove('hidden');
+            document.getElementById('errorTitle').innerText = title;
+            document.getElementById('errorDesc').innerText = msg;
         }
 
-        function showError(msg) {
-            document.body.innerHTML = `<div class="text-center p-8"><h1 class="text-red-500 text-3xl font-bold mb-4">⛔ Akses Ditolak</h1><p class="text-white">${msg}</p><a href="/" class="mt-8 block text-blue-400">Kembali</a></div>`;
-        }
-
-        // --- 3. ADMIN PANEL ---
+        // --- 3. ADMIN ---
         let taps = 0;
-        window.unlockAdmin = () => {
-            if (++taps >= 5) {
-                if (prompt("Admin Key:") === "RifqyQPP28!@") renderAdmin();
-                taps = 0;
-            }
-        };
+        window.unlockAdmin = () => { if (++taps >= 5) { if (prompt("Key:") === "RifqyQPP28!@") renderAdmin(); taps = 0; } };
 
         async function renderAdmin() {
             document.getElementById('adminPanel').classList.remove('hidden');
             const list = document.getElementById('adminList');
-            list.innerHTML = `<p class="text-center text-slate-500">Memuat...</p>`;
-
             const snap = await get(ref(db, 'links'));
             let html = "";
             
             snap.forEach(child => {
                 const d = child.val();
-                const key = child.key;
-                
-                // Badges
-                let status = "";
-                if (d.isReported) status += "<span class='text-red-500 font-bold'>REPORTED</span> ";
-                if (d.maxClicks > 0 && d.clicks >= d.maxClicks) status += "<span class='text-orange-500'>LIMIT</span>";
-                else status += "<span class='text-green-500'>ACTIVE</span>";
+                let badges = "";
+                if (d.whitelistMode) badges += "<span class='text-green-400'>[WL]</span> ";
+                else if (d.countries) badges += "<span class='text-red-400'>[BL]</span> ";
+                if (d.schedule && d.schedule.start) badges += "⏰ ";
+                if (d.isReported) badges += "⛔ ";
 
-                // URL Display (Rotator count)
-                const urlDisplay = Array.isArray(d.urls) ? (d.urls.length > 1 ? `[Rotator ${d.urls.length} Links]` : d.urls[0]) : d.url;
-
-                // Stats Safe Check
-                const m = d.stats?.mobile || 0;
-                const dt = d.stats?.desktop || 0;
-
-                html += `
-                <div class="grid grid-cols-12 gap-2 p-3 bg-slate-800/50 rounded-xl border border-slate-700 items-center text-[10px] hover:bg-slate-800 transition">
-                    <div class="col-span-2 font-mono font-bold text-blue-400 truncate">${key}</div>
-                    <div class="col-span-1 text-center font-bold text-white bg-slate-700 rounded py-1">${d.clicks}</div>
-                    <div class="col-span-2 text-center text-slate-400">📱${m} | 💻${dt}</div>
-                    <div class="col-span-5 truncate text-slate-300">${urlDisplay}</div>
-                    <div class="col-span-2 text-right flex justify-end gap-2 items-center">
-                        ${status}
-                        <button onclick="del('${key}')" class="text-red-500 hover:bg-red-500/10 p-1 rounded"><i class="fa-solid fa-trash"></i></button>
-                    </div>
+                html += `<div class="grid grid-cols-12 gap-2 p-3 bg-slate-800/50 rounded-xl border border-slate-700 items-center text-[10px] hover:bg-slate-800 transition">
+                    <div class="col-span-2 font-mono font-bold text-blue-400 truncate">${child.key}</div>
+                    <div class="col-span-1 text-center text-white bg-slate-700 rounded">${d.clicks}</div>
+                    <div class="col-span-2 text-center text-xs">${badges}</div>
+                    <div class="col-span-5 truncate text-slate-300">${Array.isArray(d.urls) ? d.urls[0] : d.url}</div>
+                    <div class="col-span-2 text-right"><button onclick="del('${child.key}')" class="text-red-500 hover:bg-red-500/10 p-1 rounded"><i class="fa-solid fa-trash"></i></button></div>
                 </div>`;
             });
-            list.innerHTML = html || `<p class="text-center text-slate-500 py-4">Belum ada data.</p>`;
+            list.innerHTML = html || "<p class='text-center py-4'>Kosong</p>";
         }
-
-        window.del = async (k) => { if(confirm("Hapus permanen?")) { await remove(ref(db, 'links/'+k)); renderAdmin(); } };
-        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('shortLink').innerText); alert("Link tersalin!"); };
+        window.del = async (k) => { if(confirm("Hapus?")) { await remove(ref(db, 'links/'+k)); renderAdmin(); } };
+        window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('shortLink').innerText); alert("Salin!"); };
     </script>
 </body>
 </html>
